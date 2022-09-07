@@ -24,6 +24,8 @@ public class ScheduledTaskService {
 
     /**
      * 每天11点28份执行
+     * cron表达式是类unix系统使用的,linux也使用
+     * cron表达式规则: https://spring.io/blog/2020/11/10/new-in-spring-5-3-improved-cron-expressions
      */
     @Scheduled(cron = "0 28 11 ? * *" )
     public void fixTimeExecution(){

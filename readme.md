@@ -164,4 +164,9 @@ spring提供了对异步任务的支持
 #### 计划任务
 1. config类上开启对计划任务的支持 @EnableScheduling
 2. 执行计划任务的方法上开启计划任务 @Scheduled
-3. @Scheduled支持多种计划任务: cron、fixDelay、fixRate等
+3. @Scheduled支持多种计划任务: cron、fixDelay、fixRate等  
+
+参考: [New in Spring 5.3: Improved Cron Expressions](https://spring.io/blog/2020/11/10/new-in-spring-5-3-improved-cron-expressions)
+
+#### 条件注解@Conditional
+基于条件创建bean
