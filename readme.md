@@ -1,3 +1,23 @@
+#### mvn将jar包打包本地maven库
+```
+   mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc14 -Dversion=1.0 -Dpackaging=jar
+   -Dfile=D:\ojdbc14.jar
+```
+#### bean
+##### spring声明bean的注解: @Component、@Service、@Repository、@Controller功能上等效
+1. @Component 没有明确角色
+2. @Service 业务逻辑层(service)使用
+3. @Repository 数据访问层(dao)使用
+4. @Controller 展现层(mvc->spring mvc)使用
+##### 注入bean的注解
+1. @Autowired Spring提供的注解
+2. @Inject JSR-330提供的注解
+3. @Resource JSR-250提供的注解
+4. @Autowired、@Inject、@Resource可以注解在set方法上或属性上,一般注解在属性上更好
+##### java配置
+使用@Configuraiton和@Bean实现:
+   1. @Configuration声明当前类是一个配置类,相当于一个Spring配置的xml文件
+   2. @Bean注解在方法上,声明当前方法的返回值为一个Bean
 #### pom.xml
 maven的pom.xml声明一个dependency的时候,如果scope设置为了runtime,则IDEA无法在写代码时给你提示一些代码,要将其注释掉才能用
 #### aop
