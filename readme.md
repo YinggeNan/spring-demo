@@ -138,3 +138,30 @@ ComponentScan(excludeFilters =
    2. 设定jvm的spring.profiles.active设置环境
    3. web项目设置Servlet的context parameter 
    ![](./profile-web-servlet.png)
+##### springboot里使用profile
+1. 对application-{env}的影响
+2. 对application.properties中的其他profile的影响
+#### 事件application event
+1. application event为bean与bean之间的消息通信提供了支持
+2. 当一个bean-a处理完一个task之后,如果希望bean-b知道并做相应的处理,就要让bean-b监听bean-a发送的事件
+使用spring event的流程:
+   1. extends ApplicationEvent,自定义事件
+   2. implements ApplicationListener,自定义事件监听器
+   3. 使用容器发布事件
+
+#### Spring aware
+1. spring的依赖注入的一个特点就是所有bean不会感知到spring容器的存在
+2. 如果你的bean要使用spring容器本身的资源时,就要感知到spring容器的存在,这就是所谓的spring aware,使用了spring aware后,bean和spring框架耦合
+3. aware接口图
+![](./spring-aware-list.png)
+4. ApplicationContext继承了MessageSource接口、ApplicationEventPublisher接口、ResourceLoader接口,所以bean继承ApplicationContextAware就可以获得spirng容器所有服务;但是原则上需要什么服务就实现什么接口
+
+#### multiThread
+spring提供了对异步任务的支持
+   1. config类开启异步任务支持 @EnableAsync
+   2. config类实现 AsyncConfigure 接口, 重写getAsyncExecutor方法,提供自定义ThreadPoolTaskExecutor
+   3. 要异步执行的方法 加上@Async
+#### 计划任务
+1. config类上开启对计划任务的支持 @EnableScheduling
+2. 执行计划任务的方法上开启计划任务 @Scheduled
+3. @Scheduled支持多种计划任务: cron、fixDelay、fixRate等
