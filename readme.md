@@ -1,3 +1,4 @@
+### spring-core
 #### mvn将jar包打包本地maven库
 ```
    mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc14 -Dversion=1.0 -Dpackaging=jar
@@ -34,7 +35,7 @@ maven的pom.xml声明一个dependency的时候,如果scope设置为了runtime,�
 1. [spring-aop-pointcut-tutorial](https://www.baeldung.com/spring-aop-pointcut-tutorial#:~:text=A%20pointcut%20expression%20can%20appear%20as%20a%20value,by%20advice%20annotations%20to%20refer%20to%20that%20pointcut.)
 2. [Spring-Aop](https://www.cnblogs.com/joy99/p/10941543.html)
 ##### aop切点的切入方式
-![](.\aspect_designator.png)
+![](pic/aspect_designator.png)
 1. arg: 限制joint point的方法的参数为指定类型 @Pointcut("args(com.cbf.aop.arg_example.ArgFlyInterface)")
 2. @args: 限制joint point的方法的参数具有指定类型的注解 @Pointcut("@args(com.cbf.aop.arg_annotation_example.ArgFlyAnnotation)")
 3. execution:
@@ -254,3 +255,49 @@ public class DemoBeanIntegrationTests {
     }
 }
 ```
+
+### spring-mvc
+#### servlet 2.5 vs servlet 3.0对spring-mvc的影响
+1. Servlet2.5及以下要在web.xml里配置<servlet>元素
+2. Servlet3.0中,不需要web.xml,实现 WebApplicationInitializer就等同于web.xml配置
+3. maven打war包
+   1. 打包方式配置成war包
+   ```
+   <packaging>war</packaging>
+   ```
+   2. 配置war包插件
+   ```
+       <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+   ```
+   3. 执行打包命令
+   ```
+   mvn clean package
+   ```
+4. IDEA配置spring-web项目
+   1. 下载并安装Tomcat,根据jdk version、servlet version、jsp version选择[tomcat version](https://tomcat.apache.org/whichversion.html)
+      选择[tomcat8,core,windows-64bit版本](https://tomcat.apache.org/download-80.cgi)
+   2. tomcat需要配置JAVA_HOME
+   3. tomcat的启动命令和关闭命令
+      1. 启动:startup.bat, 默认会占用8080端口,如果端口被占用则需要检测被占用端口的pid,并且kill掉, 检测netstat -ano|findstr "8080", 杀死指定pid进程 taskkill /f /pid <pid>
+      2. 关闭:shutdown.bat
+   4. 启动之后网页输入 localhost:8080验证
+   5. [IDEA配置tomcat启动](https://blog.csdn.net/sinat_34104446/article/details/85337513)
+      1. run configuration选择tomcat
+      2. tomcat-server选项卡配置tomcat主目录,点击右侧的configure配置
+      3. tomcat-deployment选项卡选择部署的项目和部署模式为war exploded
+      4. 设置热部署:将on update action、on frame deactivations设置为update resources
+      5. IDEA启动tomcat时需要设置JMX端口,默认为1099,可能被占用导致无法启动,可以修改为2099再尝试启动
+   6. IDEA war部署 VS war deployment部署
+      1. war模式: 将WEB工程以war包的形式部署到tomcat中
+      2. war exploded模式: 将WEB工程以当前文件夹的位置关系上传到服务器,即直接把文件夹、jsp页面 、classes等等移到Tomcat 部署文件夹里面，进行加载部署。因此这种方式支持热部署,开发时一般选择这种
