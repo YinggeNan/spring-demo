@@ -1,4 +1,4 @@
-### spring-core
+### spring-core, spring-core-demo module
 #### mvn将jar包打包本地maven库
 ```
    mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc14 -Dversion=1.0 -Dpackaging=jar
@@ -256,7 +256,7 @@ public class DemoBeanIntegrationTests {
 }
 ```
 
-### spring-mvc
+### 纯spring-mvc项目, spring-mvc-demo module
 #### servlet 2.5 vs servlet 3.0对spring-mvc的影响
 1. Servlet2.5及以下要在web.xml里配置<servlet>元素
 2. Servlet3.0中,不需要web.xml,实现 WebApplicationInitializer就等同于web.xml配置
@@ -295,9 +295,44 @@ public class DemoBeanIntegrationTests {
    5. [IDEA配置tomcat启动](https://blog.csdn.net/sinat_34104446/article/details/85337513)
       1. run configuration选择tomcat
       2. tomcat-server选项卡配置tomcat主目录,点击右侧的configure配置
-      3. tomcat-deployment选项卡选择部署的项目和部署模式为war exploded
-      4. 设置热部署:将on update action、on frame deactivations设置为update resources
-      5. IDEA启动tomcat时需要设置JMX端口,默认为1099,可能被占用导致无法启动,可以修改为2099再尝试启动
+      3. tomcat-deployment选项卡 update action、on frame deactivations设置为update resources
+      4. deployment 选项卡选择部署的项目和部署模式为war exploded
+      5. deployment 选项卡设置 application context为 /,否则访问路径的根路径需要加上设置的字符串
+      6. 设置热部署:将ocat时需要设置JMX端口,默认为1099,可能被占用导致无法启动,可以修改为2099再尝试启动
+      7. 配置完成后,下方的Service栏会有对应tomcat的启动图标
    6. IDEA war部署 VS war deployment部署
       1. war模式: 将WEB工程以war包的形式部署到tomcat中
       2. war exploded模式: 将WEB工程以当前文件夹的位置关系上传到服务器,即直接把文件夹、jsp页面 、classes等等移到Tomcat 部署文件夹里面，进行加载部署。因此这种方式支持热部署,开发时一般选择这种
+   7. 服务器如何在tomcat中服务war包?(database等配置文件的部署?)[参考](https://www.cnblogs.com/my_captain/p/9122812.html#:~:text=1.,%E5%BD%93%E9%83%A8%E7%BD%B2war%E5%8C%85%E5%88%B0tomcat%E6%97%B6%EF%BC%8C%E5%B0%B1%E9%9C%80%E8%A6%81%E5%B0%86jdbc.properties%E3%80%81log4j.properties%E6%8B%B7%E8%B4%9D%E5%88%B0tomcat%E7%9A%84%2Fapache-tomcat-7.0.88%2Fconf%E4%B8%8B%EF%BC%8C%E5%B0%86war%E5%8C%85%E6%8B%B7%E8%B4%9D%E5%88%B0%2Fwebapps%E4%B8%8B%202)
+5. spring mvc的常用注解
+   1. @Controller注解在类上:声明控制器,在spring mvc里只有@Controller才能声明控制器,@Component等不能声明控制器
+   2. @RequestMapping映射web请求,可注解在类上或方法上:@RequestMapping注解在方法上的路径会继承注解在类上的路径
+   3. @ResponseBody注解在方法上或返回值前:将返回值放在response体内,而不是返回一个页面,即用于返回data而不是view
+   4. @RequestBody注解在参数前:允许request的参数在request体内,而不是直接放在链接地址后
+   5. @PathVariable注解在参数前:用来接受路径参数,比如/news/001,可接收001作为参数
+   6. @RestController注解在类上: 组合注解,组合使用@Controller、@ResponseBody,用于只需要页面交互数据,如果不使用@RestController来开发数据交互的话,就要使用@Controller注解在类上,@ResponseBody注解在对应方法上
+6. 演示例子查看 DemoAnnoController、DemoRestController
+   1. 对象和xml、json转换的依赖
+```
+<dependency>
+    <groupId>com.fasterxml.jackson.dataformat</groupId>
+    <artifactId>jackson-dataformat-xml</artifactId>
+    <version>2.8.5</version>
+</dependency>
+```
+   2. 如果只需要对象和json之间转换,上面依赖包含下面的依赖
+```
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>2.13.4</version>
+</dependency>
+```
+7. 定制Spring mvc配置:例子 MyMvcConfig
+方式：让配置类 继承 WebMvcConfigurerAdapter,并使用 @EnableWebMvc注解来开启对 Spring MVC的支持,然后就可以重写WebMvcConfigurerAdapter的方法来自定义配置了
+   1. **配置静态资源**: 重写 WebMvcConfigurerAdapter 的 addResourceHandlers 方法
+   2. **拦截器配置**: 
+      1. Interceptor定义： 对每个请求处理前后进行相关的处理,类似 Servlet的Filter
+      2. 实现方式: 
+         1. 让普通bean实现 HandlerInterceptor接口 或 继承 HandlerInterceptorAdapter类来实现自定义拦截器
+         2. 重写 WebMvcConfigurerAdapter 的 addInterceptors方法来注册自定义拦截器
