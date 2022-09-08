@@ -6,7 +6,12 @@
 
     <groupId>org.cbf</groupId>
     <artifactId>spring-demo</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>spring-core-demo</module>
+        <module>spring-mvc-demo</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -14,60 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-framework.verion>4.1.6.RELEASE</spring-framework.verion>
     </properties>
-    <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.springframework/spring-webmvc -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>${spring-framework.verion}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework/spring-aspects -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aspects</artifactId>
-            <version>${spring-framework.verion}</version>
-        </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${spring-framework.verion}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework/spring-aop -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aop</artifactId>
-            <version>${spring-framework.verion}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.aspectj/aspectjrt -->
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjrt</artifactId>
-            <version>1.8.5</version>
-<!--            <scope>runtime</scope>-->
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.aspectj/aspectjweaver -->
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
-            <version>1.8.5</version>
-<!--            <scope>runtime</scope>-->
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.11.0</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/javax.annotation/jsr250-api -->
-        <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-    </dependencies>
     <build>
         <plugins>
             <plugin>

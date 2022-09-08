@@ -66,9 +66,9 @@ maven的pom.xml声明一个dependency的时候,如果scope设置为了runtime,�
            </dependency>
    ```
 ##### aop的通知类型
-![](./advice.png)
+![](pic/advice.png)
 ##### aop的execution详解
-![](./execution.png)
+![](pic/execution.png)
 #### scope
 scope描述Spring容器如何新建bean实例,使用@Scope注解来实现
 1. Singleton:一个Spring容器只有一个Bean实例
@@ -137,7 +137,7 @@ ComponentScan(excludeFilters =
    1. environment的activeProfiles来设定当前需要的配置环境,在开发中使用@Profile注解类或方法,达到不同情况下实例化不同的bean
    2. 设定jvm的spring.profiles.active设置环境
    3. web项目设置Servlet的context parameter 
-   ![](./profile-web-servlet.png)
+   ![](pic/profile-web-servlet.png)
 ##### springboot里使用profile
 1. 对application-{env}的影响
 2. 对application.properties中的其他profile的影响
@@ -153,7 +153,7 @@ ComponentScan(excludeFilters =
 1. spring的依赖注入的一个特点就是所有bean不会感知到spring容器的存在
 2. 如果你的bean要使用spring容器本身的资源时,就要感知到spring容器的存在,这就是所谓的spring aware,使用了spring aware后,bean和spring框架耦合
 3. aware接口图
-![](./spring-aware-list.png)
+![](pic/spring-aware-list.png)
 4. ApplicationContext继承了MessageSource接口、ApplicationEventPublisher接口、ResourceLoader接口,所以bean继承ApplicationContextAware就可以获得spirng容器所有服务;但是原则上需要什么服务就实现什么接口
 
 #### multiThread
@@ -170,3 +170,87 @@ spring提供了对异步任务的支持
 
 #### 条件注解@Conditional
 基于条件创建bean
+1. 使用@Conditional注解+ 条件
+2. 条件通过实现 org.springframework.context.annotation.Condition 接口实现
+3. 例子
+``` 
+@Configuration
+public class ConditionConfig {
+
+    @Bean
+    @Conditional(WindowsCondition.class) // 通过Conditional注解,符合Windows条件就实例化windowsListService
+    public ListService windowsListService(){
+        return new WindowsListService();
+    }
+
+    @Bean
+    @Conditional(LinuxCondition.class) // 符合Linux条件就实例化linuxListService
+    public ListService linuxListService(){
+        return new LinuxListService();
+    }
+}
+
+public class WindowsCondition implements Condition {
+    @Override
+    public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
+        return conditionContext.getEnvironment().getProperty("os.name").contains("Windows");
+    }
+}
+
+```
+
+#### 组合注解与元注解
+spring的注解太多了,反复写多个注解是重复代码,将多个注解组合一起使用降低代码冗余
+例子:组合 @Configuration 和 @ComponentScan
+``` 
+   @Target(ElementType.TYPE)
+   @Retention(RetentionPolicy.RUNTIME)
+   @Documented
+   @Configuration // 组合@Configuration
+   @ComponentScan // 组合@ComponentScan
+   public @interface WiselyConfiguration {
+       String[] value() default {}; // 覆盖value参数
+       String[] basePackages() default {}; // 覆盖basePackages参数
+   }
+```
+
+#### @Enable*注解工作原理
+@import的使用
+
+#### 测试
+1. 单元测试很简单的通过@Test完成
+2. 对于集成测试, spring通过 Spring TestContext framework来支持,可以支持 Junit或TestNG
+3. Spring提供了一个SpringJUnit4ClassRunner类,提供了Spring TestContext Framework功能,
+通过@Configuration配置Application context,通过@ActiveProfiles确定活动profile
+4. 相关依赖
+```
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring-framework.verion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+```
+5. 例子
+```
+@RunWith(SpringJUnit4ClassRunner.class) // 1.在Junit环境下提供Spring TestContext Framework功能
+@ContextConfiguration(classes = {TestConfig.class}) // 2.加载ApplicationContext, classes属性指定加载配置类
+@ActiveProfiles("prod") // 3.声明活动的profiles,改为 "dev"可得到不通过的结果
+public class DemoBeanIntegrationTests {
+    @Autowired // 4.可使用普通的 @Autowired 来注入bean
+    private TestBean testBean;
+
+    @Test // 测试代码,通过JUnit的 Assert来校验结果是否和预期的一致
+    public void prodBeanShouldInject(){
+        String expected = "from production profile";
+        String actual = testBean.getContent();
+        Assert.assertEquals(expected, actual);
+    }
+}
+```
