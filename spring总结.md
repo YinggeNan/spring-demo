@@ -330,9 +330,55 @@ public class DemoBeanIntegrationTests {
 ```
 7. 定制Spring mvc配置:例子 MyMvcConfig
 方式：让配置类 继承 WebMvcConfigurerAdapter,并使用 @EnableWebMvc注解来开启对 Spring MVC的支持,然后就可以重写WebMvcConfigurerAdapter的方法来自定义配置了
-   1. **配置静态资源**: 重写 WebMvcConfigurerAdapter 的 addResourceHandlers 方法
+   1. **配置静态资源**: 重写 WebMvcConfigurerAdapter 的 addResourceHandlers 方法   
+   **访问静态资源的例子**  
+   
+   (1) 配置了静态资源本地存放路径为 "/assets/", 外部访问路径为 "/assets/**"
+   ```
+      @Override
+      public void addResourceHandlers(ResourceHandlerRegistry registry) {
+      super.addResourceHandlers(registry);
+      // 3.addResourceLocations指的是文件放置的目录, addResourceHandler指的是对外暴露的访问路径
+      registry.addResourceHandler("/assets/**").addResourceLocations("classpath:/assets/");
+      }
+   ```
+   (2) jsp使用静态资源例子
+   ```
+   <img src="assets/js/OIP-C.jpg">
+   ```
+   (3) 编译后的情况  
+   ![](pic/maven-war-build-dir.png)
    2. **拦截器配置**: 
       1. Interceptor定义： 对每个请求处理前后进行相关的处理,类似 Servlet的Filter
       2. 实现方式: 
          1. 让普通bean实现 HandlerInterceptor接口 或 继承 HandlerInterceptorAdapter类来实现自定义拦截器
          2. 重写 WebMvcConfigurerAdapter 的 addInterceptors方法来注册自定义拦截器
+      3. 跑起来应用后,测试 http://localhost:8080/index, 输出 "this request handling :37ms"
+   3. 控制器全局配置 @ControllerAdvice
+      1. 全局控制器异常处理: @ExceptionHandler  
+         1.1 例子
+            1. 全局异常配置,ModelAndView设置对应的异常转向页面和填入页面可以获得的key-value
+            2. 异常页面
+            3. 抛出异常的Controller
+            4. 测试 访问: http://localhost:8080/advice
+      2. 绑定请求参数到Model中: @InitBinder,用来设置 WebDataBinder, WebDataBinder可以自动绑定前台请求参数到Model中
+      3. 绑定键值对到Model中: @ModelAttribute绑定键值对到Model中,让所有@RequestMapping都能获得设置的键值对
+         1. 在全局配置config类中用 @ModelAttribute 注解的方法中, 用 Model设置所有@RequestMapping方法都可以获得的key-value
+         2. @RequestMapping中,用 @ModelAttribute("<key>")注解对应的入参,获取前面设置的key
+   4. 快捷页面转向
+      1. 可用用controller的一个@RequestMapping来映射到一个页面,但是这样至少要三行代码
+   ```
+   @RequestMapping("/index") // 2.配置URL和方法之间的映射
+   public String hello(){
+      return "index"; // 3.通过之前 viewResolver的bean配置,返回值是index,说明我们的页面放置的路径为 /WEB-INF/classes/views/index.jsp
+   }
+   ```
+      2. 在 mvc config类中重写 addViewControllers 方法可以一行配置 url 到 页面的跳转
+   ```
+   @Override // 配置快捷页面转向,访问url host:port/indexgo时,转向 index页面
+   public void addViewControllers(ViewControllerRegistry registry){
+      registry.addViewController("/indexgo").setViewName("/index"); // 一行配置跳转
+   }
+   ```
+   5. 路径匹配参数配置
+      1. 默认路径参数带".", "."后的值将被忽略,

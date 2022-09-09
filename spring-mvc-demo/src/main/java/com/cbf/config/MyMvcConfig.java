@@ -4,10 +4,7 @@ import com.cbf.interceptor.DemoInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
@@ -53,6 +50,10 @@ public class MyMvcConfig extends WebMvcConfigurerAdapter { // 2.继承WebMvcConf
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(demoInterceptor());
         super.addInterceptors(registry);
+    }
 
+    @Override // 配置快捷页面转向,访问url host:port/indexgo时,转向 index页面
+    public void addViewControllers(ViewControllerRegistry registry){
+        registry.addViewController("/indexgo").setViewName("/index");
     }
 }
