@@ -521,13 +521,13 @@ public class DemoBeanIntegrationTests {
 3. 服务端推送实现：
    1. 基于SSE(server send event),需要新式浏览器支持
    2. 基于Servlet3.0+异步方法,跨浏览器
-4. 双向通信技术-websocket
-5. SSE例子：
+   3. 双向通信技术-websocket
+4. SSE例子：
    1. 配置SSE控制器 SseController
    2. 配置对应jsp页面 sse.jsp
    3. 配置url到对应jsp页面的跳转
    4. 访问 url http://localhost:8080/sse 测试
-6. Servlet3.0+异步方法例子
+5. Servlet3.0+异步方法例子
    1. 在实现了 接口 WebApplicationInitializer 的 WebInitializer 里开启对异步方法的支持
    ```
        ServletRegistration.Dynamic servlet = servletContext.addServlet("dispatcher", new DispatcherServlet(context)); // 3.注册spring mvc的 DispatcherServlet
@@ -542,3 +542,44 @@ public class DemoBeanIntegrationTests {
    5. 在mvcConfig开启对 计划任务的支持 @EnableScheduling
    6. 在 mvcConfig里添加对 异步jsp的跳转支持
    7. 测试访问 url 
+6. DeferredResult 使用, servlet3.0开始支持
+   1. 用于对 IO密集型或长时间计算的API作为返回值,这样同时多个request到达该api时就不会阻塞
+   2. 在另一个thread中对 DeferredResult 值进行真正的更新, 调用其 setResult 方法,此时客户端会收到真正的结果.
+   3. 可以对一个 DeferredResult 对象注册三种回调
+      1. timeout callback
+   ```
+   设置timeout callback
+   deferredResult.onTimeout(() -> 
+     deferredResult.setErrorResult(
+       ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT)
+         .body("Request timeout occurred.")));
+   // 测试timeout
+   ForkJoinPool.commonPool().submit(() -> {
+       LOG.info("Processing in separate thread");
+       try {
+           Thread.sleep(6000);
+       } catch (InterruptedException e) {
+           ...
+       }
+       deferredResult.setResult(ResponseEntity.ok("OK")));
+   });
+   ```
+      2. error callback
+   ```
+   deferredResult.onError((Throwable t) -> {
+     deferredResult.setErrorResult(
+     ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+     .body("An error occurred."));
+   });
+   ```
+      3. completion callback
+   ```
+   deferredResult.onCompletion(() -> LOG.info("Processing complete"));
+   ```
+   4. 参考: [Guide to DeferredResult in Spring](https://www.baeldung.com/spring-deferred-result)
+7. DeferredResult VS 一般阻塞 api
+   1. DeferredResult的api,假如这个api是等待10s后然后返回结果(异步等待),然后先后进入1、2两个request(时间差可忽略),结果是request 1、2都等待10s后得到响应
+   2. 一般阻塞api,假如这个api是等待10s后然后返回结果(同步等待),然后先后进入1、2两个request(时间差可忽略),结果是request 1等待10s后得到响应,request 2等待20s后得到响应
+   3. 所以对于文件IO类响应,最好是设置成异步api,减少累计等待时间
+   4. DeferredResultExampleController的异步api "/deferred/completionCallback"、"/deferred/completionCallback",同步api "/deferred/noDeferred"
+   5. 

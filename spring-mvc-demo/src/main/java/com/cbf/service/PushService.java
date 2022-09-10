@@ -22,6 +22,7 @@ public class PushService {
     @Scheduled( fixedDelay =  5000)
     public void refresh(){
         if(deferredResult != null){
+            // 异步任务完成时,就调用 setResult方法
             deferredResult.setResult(Long.toString(System.currentTimeMillis()));
         }
     }
