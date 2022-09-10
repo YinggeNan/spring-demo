@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.*;
@@ -23,6 +24,7 @@ import java.util.List;
 @Configuration
 @EnableWebMvc // 1.开启Springmvc支持,如果没有这句,重写 WebMvcConfigurerAdapter方法无效
 @ComponentScan("com.cbf")
+@EnableScheduling
 public class MyMvcConfig extends WebMvcConfigurerAdapter { // 2.继承WebMvcConfigurerAdapter,重写方法则可对springmvc进行配置
     /**
      * 配置一个JSP ViewResolver,映射路径和实际页面的位置
@@ -71,6 +73,9 @@ public class MyMvcConfig extends WebMvcConfigurerAdapter { // 2.继承WebMvcConf
 
         // sse 跳转页面
         registry.addViewController("/sse").setViewName("sse");
+
+        // 异步 跳转页面
+        registry.addViewController("/async").setViewName("/async");
     }
 
     @Override

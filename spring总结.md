@@ -526,4 +526,19 @@ public class DemoBeanIntegrationTests {
    1. 配置SSE控制器 SseController
    2. 配置对应jsp页面 sse.jsp
    3. 配置url到对应jsp页面的跳转
-   4. 
+   4. 访问 url http://localhost:8080/sse 测试
+6. Servlet3.0+异步方法例子
+   1. 在实现了 接口 WebApplicationInitializer 的 WebInitializer 里开启对异步方法的支持
+   ```
+       ServletRegistration.Dynamic servlet = servletContext.addServlet("dispatcher", new DispatcherServlet(context)); // 3.注册spring mvc的 DispatcherServlet
+       servlet.addMapping("/");
+       servlet.setLoadOnStartup(1);
+       // 开启异步方法支持
+       servlet.setAsyncSupported(true);
+   ```
+   2. 实现异步更新service PushService, 使用 @Scheduled( fixedDelay =  5000) 定时更新
+   3. 实现controller AysncController 接受api调用
+   4. 实现 async.jsp页面向server端发起 ajax调用
+   5. 在mvcConfig开启对 计划任务的支持 @EnableScheduling
+   6. 在 mvcConfig里添加对 异步jsp的跳转支持
+   7. 测试访问 url 
