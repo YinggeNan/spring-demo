@@ -381,4 +381,135 @@ public class DemoBeanIntegrationTests {
    }
    ```
    5. 路径匹配参数配置
-      1. 默认路径参数带".", "."后的值将被忽略,
+      1. 默认路径参数带".", "."后的值将被忽略
+      1.1 例子,访问 url http://localhost:8080/anno/pathvar/xx.yy, 输出 "url:http://localhost:8080/anno/pathvar/xx.yy can access,str:xx"
+      1.2 重写 mvcConfig类的 configurePathMatch方法可不忽略 "."后面的参数
+   ```
+   @Override
+   public void configurePathMatch(PathMatchConfigurer configurer) {
+      configurer.setUseSuffixPatternMatch(false); // 访问url时不忽略 "."后面的参数
+      super.configurePathMatch(configurer);
+   }
+   ```
+      1.3 重新访问,输出 "url:http://localhost:8080/anno/pathvar/xx.yy can access,str:xx.yy"
+
+#### springmvc 上传文件
+1. 配置 MultipartResolver 上传文件
+2. 在 MultipartFil 接收文件,用 MultipartFil[] 接收多个文件
+3. 配置依赖
+```
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.7</version>
+        </dependency>
+```
+4. 配置upload.jsp
+5. 添加转向到 upload页面 的ViewController
+6. 配置MultipartResolver
+```
+    @Bean
+    public MultipartResolver multipartResolver(){
+        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+        multipartResolver.setMaxUploadSize(1000000);
+        return multipartResolver;
+    }
+```
+7. 配置上传文件Controller
+   ```
+   @Controller
+   public class UploadController {
+   
+       @RequestMapping(value = "/upload" , method = RequestMethod.POST)
+       public @ResponseBody String upload(MultipartFile file){ // 1.使用MultipartFile接受上传的文件
+           try {
+               // 2.使用FileUtils.writeByteArrayToFile快速写文件到磁盘
+               FileUtils.writeByteArrayToFile(new File("D:\\tmp\\upload-save-dir\\" + file.getOriginalFilename()),file.getBytes());
+               return "upload success";
+           } catch (IOException e) {
+               throw new RuntimeException(e);
+           }
+       }
+   }
+   ```
+8. windows本地设置一个上传文件夹,接受文件夹,测试即可, 访问url http://localhost:8080/toUpload
+
+#### 自定义 HttpMessageConverter
+1. spring内置了大量的HttpMessageConverter,比如 MappingJackson2HttpMessageConverter、StringHttpMessageConverter
+2. 自定义 HttpMessageConverter
+``` 
+   /**
+    * 1. 继承 AbstractHttpMessageConverter 实现自定义 HttpMessageConverter
+    * @Author yingge
+    * @Date 2022/9/10 9:47
+    */
+   public class MyMessageConverter extends AbstractHttpMessageConverter<DemoObj> {
+   
+       public MyMessageConverter(){
+           // 2.自定义媒体类型 application/x-wisely, 指定编码为 UTF-8
+           super(new MediaType("application", "x-wisely", Charset.forName("UTF-8")));
+       }
+   
+       // 3. 重写 readInternal, 处理请求的数据, 表明将输入数据按照自定义处理方式并转成DemoObj对象
+       @Override
+       protected DemoObj readInternal(Class<? extends DemoObj> aClass, HttpInputMessage httpInputMessage) throws IOException, HttpMessageNotReadableException {
+           String temp = StreamUtils.copyToString(httpInputMessage.getBody(), Charset.forName("UTF-8"));
+           String[] tempArr = temp.split("-");
+           return new DemoObj(Long.valueOf(tempArr[0]), tempArr[1]);
+       }
+   
+       // 4.表明本 HttpMessageConverter 只处理 DemoObj这个类
+       // 即当 要访问的 api 接口处理的入参类是 DemoObj 类时才调用上面的readInternal方法
+       @Override
+       protected boolean supports(Class<?> aClass) {
+           return DemoObj.class.isAssignableFrom(aClass);
+       }
+   
+       // 5. 重写 writeInternal, 处理如何输出数据到 response,这里是 原样输出加上"hello:"
+       @Override
+       protected void writeInternal(DemoObj obj, HttpOutputMessage httpOutputMessage) throws IOException, HttpMessageNotWritableException {
+           String out = "hello:" + obj.getId() + "-" + obj.getName();
+           httpOutputMessage.getBody().write(out.getBytes());
+       }
+   }
+```
+3. 配置 converter 跳转
+   ```
+   // converter 跳转页面
+   registry.addViewController("/converter").setViewName("converter");
+   ```
+4. 配置自定义 converter 的bean, 重写 mvcConfig类的方法
+   1.  configureMessageConverters方法: 重写会覆盖掉 springmvc 默认注册的多个 HttpMessageConverter
+   2. extendMessageConverts方法: 仅添加一个自定义的 HttpMessageConverter,不覆盖默认注册的 HttpMessageConverter
+5. 重写 extendMessageConverts方法
+   ```
+       // 添加自定义 MyMessageConverter
+       @Override
+       public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+           converters.add(converter());
+           super.extendMessageConverters(converters);
+       }
+       @Bean
+       public MyMessageConverter converter(){
+           return new MyMessageConverter();
+       }
+   ```
+6. 创建 ConverterController
+``` 
+
+```
+7. 创建 converter.jsp
+8. 测试,访问url http://localhost:8080/converter
+   1. 访问api接口时,要判断reqeust的 content-type 和 api的@RequestMapping的 produces类型是否一致
+   2. 然后是否走自定义 converter 的readInternal,还要看入参的 对象类型是否和 自定义converter指定的类型一致,入参必须用 @RequestBody注解
+   3. api处理完的output是否走 converter 的 writeInternal 要看接口的返回值 类型是否和自定义converter指定的类型一致,且返回值必须使用 @ResponseBody注解
+   4. 参考:[SpringMVC自定义配置消息转换器踩坑总结](https://www.cnblogs.com/fingerboy/p/7753577.html)
+
+9. 访问流程图:
+
+#### 服务端推送技术

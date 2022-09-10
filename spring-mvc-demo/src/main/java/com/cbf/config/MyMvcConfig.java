@@ -4,9 +4,16 @@ import com.cbf.interceptor.DemoInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
+
+import java.util.List;
 
 /**
  * @EnableWebMvc开启默认配置: ViewResolver或MessageConverter等
@@ -52,8 +59,39 @@ public class MyMvcConfig extends WebMvcConfigurerAdapter { // 2.继承WebMvcConf
         super.addInterceptors(registry);
     }
 
-    @Override // 配置快捷页面转向,访问url host:port/indexgo时,转向 index页面
+    @Override
     public void addViewControllers(ViewControllerRegistry registry){
+        // 配置快捷页面转向,访问url host:port/indexgo时,转向 index页面
         registry.addViewController("/indexgo").setViewName("/index");
+        //  upload 转向页面
+        registry.addViewController("/toUpload").setViewName("upload");
+
+        // converter 跳转页面
+        registry.addViewController("/converter").setViewName("converter");
+    }
+
+    @Override
+    public void configurePathMatch(PathMatchConfigurer configurer) {
+        configurer.setUseSuffixPatternMatch(false); // 访问url时不忽略 "."后面的参数
+        super.configurePathMatch(configurer);
+    }
+
+    // 上传文件配置
+    @Bean
+    public MultipartResolver multipartResolver(){
+        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+        multipartResolver.setMaxUploadSize(1000000);
+        return multipartResolver;
+    }
+
+    // 添加自定义 MyMessageConverter
+    @Override
+    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+        converters.add(converter());
+        super.extendMessageConverters(converters);
+    }
+    @Bean
+    public MyMessageConverter converter(){
+        return new MyMessageConverter();
     }
 }
