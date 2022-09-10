@@ -1,0 +1,36 @@
+@startuml
+'skinparam backgroundColor #EEEBDC
+'skinparam handwritten true
+
+skinparam sequence {
+ArrowColor DeepSkyBlue
+ActorBorderColor DeepSkyBlue
+LifeLineBorderColor blue
+LifeLineBackgroundColor #A9DCDF
+
+ParticipantBorderColor DeepSkyBlue
+ParticipantBackgroundColor DodgerBlue
+ParticipantFontName Impact
+ParticipantFontSize 17
+ParticipantFontColor #A9DCDF
+
+ActorBackgroundColor aqua
+ActorFontColor DeepSkyBlue
+ActorFontSize 17
+ActorFontName Aapex
+}
+actor 用户 as actor1
+boundary 浏览器  as b1
+control converter.jsp as jsp
+actor1 -> b1 : http://localhost:8080/converter
+b1  -> jsp:
+jsp-> MyMessageConverter: 点击"application/x-wisely请求"按钮
+MyMessageConverter<-MyMessageConverter: 判断request的content-type符合\n custom message convert要求\n 且访问api的入参类符合custom \n支持类要求
+MyMessageConverter<-MyMessageConverter: 调用readInternal对request body进行自定义处理
+MyMessageConverter->ConverterController: 将request传给调用api\n的controller
+ConverterController<-ConverterController: 处理
+ConverterController-> MyMessageConverter: 将处理完的消息传回\n MyMessageConverter
+MyMessageConverter<-MyMessageConverter: 判断ConverterController返回值类型\n是否为MyMessageConverter支持的\n类型如果是则调用 writeInternal
+MyMessageConverter->b1: 将writeInternal处理完的消息传回浏览器
+b1->actor1
+@enduml

@@ -510,6 +510,20 @@ public class DemoBeanIntegrationTests {
    3. api处理完的output是否走 converter 的 writeInternal 要看接口的返回值 类型是否和自定义converter指定的类型一致,且返回值必须使用 @ResponseBody注解
    4. 参考:[SpringMVC自定义配置消息转换器踩坑总结](https://www.cnblogs.com/fingerboy/p/7753577.html)
 
-9. 访问流程图:
-
+9. 访问流程图:  
+![](pic/visit-custom-convert-sequence.png)
+参考: [plantuml-sequence-diagram](https://plantuml.com/sequence-diagram)
 #### 服务端推送技术
+1. Ajax向服务器轮询,让浏览器尽快获得消息,轮询频率不好控制,增加了服务端的压力
+2. 服务端推送技术: 
+   1. client向 server发送 request时, server抓住这个request不放,等有数据更新时才返回给客户端,客户端接收到消息后,再向服务端发送请求.
+   2. 对比ajax轮询,降低了发送到服务器的请求数量,减少了服务器压力
+3. 服务端推送实现：
+   1. 基于SSE(server send event),需要新式浏览器支持
+   2. 基于Servlet3.0+异步方法,跨浏览器
+4. 双向通信技术-websocket
+5. SSE例子：
+   1. 配置SSE控制器 SseController
+   2. 配置对应jsp页面 sse.jsp
+   3. 配置url到对应jsp页面的跳转
+   4. 

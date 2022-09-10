@@ -62,12 +62,15 @@ public class MyMvcConfig extends WebMvcConfigurerAdapter { // 2.继承WebMvcConf
     @Override
     public void addViewControllers(ViewControllerRegistry registry){
         // 配置快捷页面转向,访问url host:port/indexgo时,转向 index页面
-        registry.addViewController("/indexgo").setViewName("/index");
+        registry.addViewController("/indexgo").setViewName("index");
         //  upload 转向页面
         registry.addViewController("/toUpload").setViewName("upload");
 
         // converter 跳转页面
         registry.addViewController("/converter").setViewName("converter");
+
+        // sse 跳转页面
+        registry.addViewController("/sse").setViewName("sse");
     }
 
     @Override
