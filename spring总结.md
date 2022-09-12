@@ -715,3 +715,91 @@ java -jar xx.jar --server.port=9090
    3. 从spring4.3开始可以自定义 PropertySourceFactory 来支持yaml文件处理, YamlPropertySourceFactory
 
 #### springboot日志配置
+1. SLF4J是日志门面,使用了 门面设计模式, 可以集成各种具体日志实现,使用SLF4J需引入如下依赖
+```
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
+        </dependency>
+```
+1.1 使用 SLF4J
+```
+    private static final Logger logger = LoggerFactory.getLogger(Application.class);
+```
+1.2 门面设计模式原理,核心是门面对象Facade
+   1. 门面对象知道所有子角色的功能和责任
+   2. 将client发来的request委派到子系统中
+   3. facade没有实际业务逻辑,不参与子系统业务逻辑实现
+1.3 SLF4J的作用
+   1. 假设我们系统中引入了多种中间件,然后每种中间件都有自己的日志系统,就引入了多种日志框架,如果没有SL4FJ就要维护多种日志框架
+   2. 有了SL4J,不管是那种日志框架,我们在代码层面使用都只需要一样的日志代码,由SL4J来调用具体的日志系统来打印日志
+   3. 具体作用就是(1)提供日志接口(2)获取具体日志对象
+1.4 [SLF4J的原理](https://www.cnblogs.com/xrq730/p/8619156.html)
+   1. 所有实现SL4J标准的具体日志系统都会实现org/slf4j/impl/StaticLoggerBinder.class
+   2. SLF4J运行时会去加载所有的org/slf4j/impl/StaticLoggerBinder.class,然后绑定其中一个来作为具体的日志系统
+   3. [classLoader原理](https://www.javatpoint.com/classloader-in-java)
+1.5 [lombok简化SLF4J的日志](https://blog.csdn.net/qq_40435659/article/details/114370663)
+   1. 引入lombok
+   ```
+           <dependency>
+               <groupId>org.projectlombok</groupId>
+               <artifactId>lombok</artifactId>
+               <version>1.18.24</version>
+           </dependency>
+   ```
+   2. 简化使用,用一个注解 @Slf4j即可,原理是编译器会在编译时直接操作语法树增加节点,即增加下面代码
+   ```
+   private static final Logger logger = LoggerFactory.getLogger(Application.class);
+   ```
+1.6 但是注意,springboot的 spring-boot-starter-web 自动引入了 spring-boot-starter-logging,其引入了如下依赖,所以就不需要手动引入 SLF4J、logback、log4j-to-Slf4j依赖了
+   1. SL4FJ
+   2. Logback
+   3. og4j-to-Slf4j
+2. logback日志系统需要引入以下依赖
+```
+
+```
+2.1 logback.xml,放到springboot的 src/main/resources下自动生效,注意配置 logback_home时的 windows路径, 双斜杠,否则会报找不到路径的错
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+    <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
+    <!--注意这里定义windows文件路径时,要用双反斜杠-->
+    <property name="LOG_HOME" value="D:\\tmp\\"/>
+    <!-- 定义日志格式  -->
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%thread] [%-30.30logger{30}] %msg%n"/>
+    <!-- 控制台输出 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <!-- 按照每天生成日志文件 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <FileNamePattern>${LOG_HOME}/SpringBoot-Slf4j_%d{yyyy-MM-dd}.log</FileNamePattern>
+            <!--日志文件保留天数-->
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+        <!--日志文件最大的大小-->
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>10MB</MaxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+    <!-- 日志输出级别 -->
+    <logger name="org.springframework" level="INFO"/>
+<!--    <logger name="com.hl.magic" level="INFO"/>-->
+    <root level="DEBUG">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>
+```
