@@ -582,4 +582,136 @@ public class DemoBeanIntegrationTests {
    2. 一般阻塞api,假如这个api是等待10s后然后返回结果(同步等待),然后先后进入1、2两个request(时间差可忽略),结果是request 1等待10s后得到响应,request 2等待20s后得到响应
    3. 所以对于文件IO类响应,最好是设置成异步api,减少累计等待时间
    4. DeferredResultExampleController的异步api "/deferred/completionCallback"、"/deferred/completionCallback",同步api "/deferred/noDeferred"
-   5. 
+
+#### spring mvc测试
+1. 测试驱动开发(Test Driven Development, TDD):先按照需求写一个预期结果的测试用例,刚开始是失败的测试,随着不断的编码和重构,最终让测试用例通过测试
+2. 测试依赖,scope是test,说明发布的jar中不包含这些依赖包
+```
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring-framework.verion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+```
+3. java静态导入,IDEA不自动提示好像
+4. 测试例子 TestControllerIntegrationTests
+
+#### spring testing
+[MockMvc – Spring MVC testing framework introduction: Testing Spring endpoints](https://blog.marcnuri.com/mockmvc-spring-mvc-framework#:~:text=The%20easiest%20way%20to%20run%20a%20test%20with,only%20the%20required%20components%20for%20an%20MVC%20application)
+[Testing](https://docs.spring.io/spring-framework/docs/current/reference/html/testing.html#integration-testing-annotations-spring)
+
+### springboot
+#### springboot特点
+1. springboot项目可以 以jar包形式独立运行: java -jar xxx.jar
+2. 内嵌Servlet容器,springboot可选内嵌Tomcat、Jetty、Undertow,然后就不需要以war形式部署,直接以jar包形式部署
+3. 提供 starter 简化 maven配置, starter会自动引入相应的依赖包,不再需要手动指定
+4. 自动配置spring:springboot根据在类路径中jar包、类等自动配置bean,来减少需要的配置,比如引入了jdbc、mybatis等依赖,就会自动配置data source,需要提供数据库连接配置
+5. 准生产的应用监控:提供基于http、ssh、telnet对运行时的项目进行监控
+6. 使用注解来配置
+#### @SpringBootApplication 注解
+1. @Configuration、@ComponentScan：会自动扫描@SpringBootApplication所在类的同级别包
+2. @EnableAutoConfiguration：根据类路径中的jar包依赖为当前项目自动配置
+3. 关闭特定自动配置使用 @SpringBootApplication 的 exclude 参数
+```
+@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
+```
+4. 修改banner
+   1.在src/main/sources下新建一个banner.txt
+   2. 在 http://patorjk.com/software/taag 网站生成字符,然后复制粘贴到banner.txt中
+   3. 关闭banner:
+   ```
+   new SpringApplicationBuilder(Application.class).bannerMode(Banner.Mode.OFF).run(args);
+   ```
+5. 全局配置文件application.properties或application.yaml,放在 src/main/sources下
+   1. 对默认端口号、默认访问路径修改
+   ```
+   server:
+     port: 9090
+     servlet:
+       context-path: /hello-boot //或者写成 contextPath
+   ```
+   2. 在application.properties或application.yaml定义的属性,直接在配置类中使用@Value("${<name>}")获取
+6. start pom
+   1. 官方提供的starter pom  
+
+| 名称                                     | 描述                                                |
+|----------------------------------------|---------------------------------------------------|
+| spring-boot-starter                    | 核心starer,包含自动配置、日志、yaml配置文件支持                     |
+| spring-boot-starter-actuator           | 准生产特特性，用于监控和管理应用                                  |
+| spring-boot-starter-remote-shell       | 提供基于ssh协议的监控和管理                                   |
+| spring-boot-starter-amqp               | 使用spring-rabbit来支持AMQP                            |
+| spring-boot-starter-aop                | 使用spring-aop和AspectJ支持面向切面百年城                     |
+| spring-boot-starter-batch              | 对Spring batch的支持                                  |
+| spring-boot-starter-cache              | 对Spring cache抽象的支持                                |
+| spring-boot-starter--cloud-connectors  | 对云平台(Cloud Foundry、Heroku)提供的服务提供简化的连接方式          |
+| spring-boot-starter-data-elasticsearch | 对Elasticsearch的支持                                 |
+| spring-boot-starter-data-gemfire       | 对分布式存储Gemfire的支持                                  |
+| spring-boot-starter-data-jpa           | 对JPA的支持，包含spring-data-jpa、spring-orm和hibernate    |
+| spring-boot-starter-data-mongodb       | 对mongodb的支持                                       |
+| spring-boot-starter-data-rest          | 将spring data repository暴露为 REST 形式的服务             |
+| spring-boot-starter-data-solr          | 对apache solr 数据检索平台的这次hi                          |
+| spring-boot-starter-freemarker         | 对freemarker模板引擎的这次hi                              |
+| spring-boot-starter-groovy-templates   | 对groovy模板引擎的支持                                    |
+| spring-boot-starter-hateoas            | 对基于hateoas的REST形式的网络服务的支持                         |
+| spring-boot-starter-hornetq            | 通过HornetQ对JMS的支持                                  |
+| spring-boot-starter-integration        | 对系统继承框架spring-integration的支持                      |
+| spring-boot-starter-jdbc               | 对JDBC数据库的支持                                       |
+| spring-boot-starter-jersey             | 对Jersey REST形式的网络服务支持                             |
+| spring-boot-starter-jta-atomikos       | 通过atomikos对分布式事务的支持                               |
+| spring-boot-starter-jta-bitronix       | 通过bitonix对分布式事务的支持                                |
+| spring-boot-starter-mail               | 对javax.mail的支持                                    |
+| spring-boot-starter-mobile             | 对spring-mobie的支持                                  |
+| spring-boot-starter-mustache           | 对mustache模板引擎的支持                                  |
+| spring-boot-starter-redis              | 对redis的支持，包括spring-redis                          |
+| spring-boot-starter-security           | 对security的这次hi                                    |
+| spring-boot-starter-social-facebook    | 对facebook的支持                                      |
+| spring-boot-starter-linkedin           | 对linkedin的支持                                      |
+| spring-boot-starter-social-twitter     | 对twiter的这次hi                                      |
+| spring-boot-starter-test               | 对常用测试框架 JUnit、Hamcrest、Mockito的支持，包括spring-test模板 |
+| spring-boot-starter-thymeleaf          | 对Thymeleaf模板引擎的支持                                 |
+| spring-boot-starter-velocity           | 对velocit模板引擎的支持                                   |
+| spring-boot-starter-web                | 对web项目的支持，包括tomcat、spring-webmvc                  |
+| spring-boot-starter-Tomcat             | spring boot默认容器 tomcat                            |
+| spring-boot-starter-Jetty              | 使用Jetty作为Servlet容器替换Tomcat                        |
+| spring-boot-starter-undertow           | 使用undertow作为Servlet容器替换Tomcat                     |
+| spring-boot-starter-loggin             | Springboot默认日志框架logback                           |
+| spring-boot-starter-log4j              | 支持使用Log4j日志框架                                     |
+| spring-boot-starter-websocket          | 对websocket开发的支持                                   |
+| spring-boot-starter-ws                 | 对sring web services的支持                            |
+
+   2. 第三方提供的starter pom
+
+| 名称                 | 描述     |
+|--------------------|--------|
+| apache Camel       | Column |
+| Spring Batch(高级用法) | Column |
+
+7. 初始化一个springboot应用的方式
+   1. IDEA直接new project然后选择maven或gradle,执行编辑pom.xml或build.gradle来引入依赖即可
+   2. UI https://start.spring.io/ 手动选择依赖、springboot version、java version等下载即可
+   3. gradle命令行 gradle init
+   4. maven命令行 mvn -B archetype:generate -DgroupId=com.mycompany.app -DartifactId=my-app -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4
+8. 使用xml配置,在一些特殊情况,可能必须使用xml配置,可以使用 @ImportResource来加载xml配置
+   1. 新建测试xml配置文件: sample.xml, 创建了一个测试类bean
+   2. 新建测试类 XMLTestService
+   3. 在配置类中引入xml配置 @ImportResource(locations = "classpath:sample.xml")
+   4. 启动app后, 使用context判断是否包含测试类bean: applicationContext.containsBean("XMLTestService")
+9. 使用外部配置,比如修改tomcat端口号
+```
+java -jar xx.jar --server.port=9090
+```
+10. 类型安全配置类,可以用 @ConfigurationProperties(prefix="<prefix>") 指定前缀,然后把一些配置文件内容绑定到一个类上
+   1. 如果要加载的配置不在默认配置文件即 application.properties中时
+      1. springboot 1.5之前可以用 @ConfigurationProperties 的 locations属性指定
+      2. springboot 1.5之后用 @PropertySource来指定
+   2. @PropertySource默认不能解析yaml文件,所以用properties文件.
+   3. 从spring4.3开始可以自定义 PropertySourceFactory 来支持yaml文件处理, YamlPropertySourceFactory
+
+#### springboot日志配置
