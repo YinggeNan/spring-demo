@@ -803,3 +803,47 @@ java -jar xx.jar --server.port=9090
     </root>
 </configuration>
 ```
+#### spring profile配置
+1.默认引入application.properties或application.yaml
+2.可选引入application-{env}.properties或application-{env}.yaml; 在application.properties设置 "spring.profiles.active={env}"或 -Dspring.profiles.active={env}
+```
+spring:
+  profiles:
+    active: db
+```
+2.1 可在 application.yaml 中配置多个profile,通过 在application.properties设置 "spring.profiles.active={env}"或 -Dspring.profiles.active={env} 激活其中一个, 好像有点问题
+```
+---
+spring:
+  profiles: dev
+  cbf:
+    name: "cbf-dev"
+
+---
+spring:
+  profiles: uat
+  cbf:
+    name: "cbf-uat"
+
+---
+spring:
+  profiles: prod
+  cbf:
+    name: "cbf-prod"
+
+```
+3.在一个配置文件中引入其他配置文件,比如加载 application-db.yml 时同时加载 application-config-a.yml、application-config-b.yml,注意引入的这两个yml名字都是 application-<name>.yaml
+```
+spring:
+  profiles:
+    include:
+      - config-a
+      - config-b
+```
+3.1 注意spring.profiles.include在 springboot 2.4版本及以上好像有问题,2.3.12.RELEASE 版本无问题
+#### CommandLineRunner
+0.作用: 在应用启动后，去执行相关代码逻辑，且只会执行一次,run()方法里使用任何依赖，因为它们已经初始化好了
+1.使用:bean实现接口
+   1.实现接口java类 + @Component/@Service等
+   2.实现接口java类 + @Bean
+2.指定多个实现CommandLineRunner接口类执行顺序 @Order(value=<number>)

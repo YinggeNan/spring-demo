@@ -1,0 +1,8 @@
+db:
+  name: cbf-db
+  password: cbf-db-password
+spring:
+  profiles:
+    include:
+      - config-a
+      - config-b

@@ -1,0 +1,32 @@
+name: bofan
+server:
+  port: 9090
+  servlet:
+    contextPath: /hello-boot
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
+  config: classpath:logback.xml
+spring:
+  profiles:
+    active: dev
+
+#---
+#spring:
+#  profiles: dev
+#  cbf:
+#    name: "cbf-dev"
+#
+#---
+#spring:
+#  profiles: uat
+#  cbf:
+#    name: "cbf-uat"
+#
+#---
+#spring:
+#  profiles: prod
+#  cbf:
+#    name: "cbf-prod"
