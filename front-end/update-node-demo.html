@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!-- HTML结构 -->
+<div id="test-div">
+    <p id="test-js">id="test-js", javascript</p>
+    <p>Java</p>
+</div>
+<button onclick="modifyNode()">修改id="test-js"的节点的内容为JavaScript,且字体为红色粗体</button>
+<script>
+    function modifyNode() {
+        // 获取<p>javascript</p>节点:
+        var js = document.getElementById('test-js');
+        // 修改文本为JavaScript:
+        js.innerText = "JavaScript";
+        // 修改CSS为: color: #ff0000, font-weight: bold
+        js.style.color = "#ff0000";
+        js.style.fontWeight = "bold";
+    }
+</script>
+</body>
+</html>

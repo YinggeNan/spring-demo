@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!-- HTML结构 -->
+<ol id="test-list">
+    <li class="lang">Scheme</li>
+    <li class="lang">JavaScript</li>
+    <li class="lang">Python</li>
+    <li class="lang">Ruby</li>
+    <li class="lang">Haskell</li>
+</ol>
+<button onclick="sortNodeFluxBetter()">对上面节点按照ASCII顺序排序</button>
+
+<script>
+    function sortNodeFlux(){
+        list = document.getElementById('test-list');
+        sort = Array.from(list.children).sort((a, b) => a.innerText > b.innerText ? 1:-1);
+        for (let e of sort) list.appendChild(e);
+    }
+    function sortNodeFluxBetter(){
+        list = Array.from(document.getElementById('test-list').children);
+        sort = list.map(element => element.innerText).sort();
+        list.map((element, index) => element.innerText = sort[index])
+    }
+</script>
+</body>
+</html>
