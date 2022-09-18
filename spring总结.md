@@ -256,6 +256,27 @@ public class DemoBeanIntegrationTests {
 }
 ```
 
+#### spring项目中获取实现某个接口的所有实现类
+0. 参考 spring-core-demo的 com.cbf.interface_all_implement 包
+1. 使用 ApplicationContextAware
+   0. 所有实现类都成为spring 管理的 bean
+   1. 用一个配置类(有注解@Configuration)实现 ApplicationContextAware 的 setApplicationContext 方法,
+   2. 在 setApplicationContext 方法中用 applicationContext.getBeansOfType(<interface>.class) 获得指定接口的所有实现类
+2. 直接使用 @Autowired
+   0. 所有实现类都成为spring 管理的 bean
+   1. 在一个配置类中用下列 @Autowired 代码
+```
+    @Autowired
+    private Map<String, SpringGetAllTestInterface> beansOfType1;
+```
+
+
+#### 纯java如何获取某个接口的所有实现类,使用 SPI
+1. 在META-INF/services/目录下用你的接口全路径名称命名一个文件（不加后缀），然后在该文件中一行一个添加你的接口实现类的全路径名
+2. 通过load方法来加载出所有的接口实现类,load()返回值是一个迭代器,用这个迭代器可以遍历出所有接口实现类
+```
+ServiceLoader<MyInterface> loader = ServiceLoader.load(MyInterface.class);
+```
 ### 纯spring-mvc项目, spring-mvc-demo module
 #### servlet 2.5 vs servlet 3.0对spring-mvc的影响
 1. Servlet2.5及以下要在web.xml里配置<servlet>元素
@@ -439,6 +460,41 @@ public class DemoBeanIntegrationTests {
    ```
 8. windows本地设置一个上传文件夹,接受文件夹,测试即可, 访问url http://localhost:8080/toUpload
 
+#### 配置跨域
+重写 WebMvcConfigurerAdapter 的 addCorsMappings
+```
+/**
+     * 跨域CORS配置
+     * @param registry
+     */
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        super.addCorsMappings(registry);
+        registry.addMapping("/**")
+                .allowedHeaders("*")
+                .allowedMethods("POST","GET")
+                .allowedOrigins("http://...")
+                .allowCredentials(true);
+    }
+```
+
+#### 配置 formatter
+```
+@Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addFormatter(new Formatter<Date>() {
+            @Override
+            public Date parse(String date, Locale locale) {
+                return new Date(Long.parseLong(date));
+            }
+
+            @Override
+            public String print(Date date, Locale locale) {
+                return Long.valueOf(date.getTime()).toString();
+            }
+        });
+    }
+```
 #### 自定义 HttpMessageConverter
 1. spring内置了大量的HttpMessageConverter,比如 MappingJackson2HttpMessageConverter、StringHttpMessageConverter
 2. 自定义 HttpMessageConverter
@@ -842,8 +898,24 @@ spring:
 ```
 3.1 注意spring.profiles.include在 springboot 2.4版本及以上好像有问题,2.3.12.RELEASE 版本无问题
 #### CommandLineRunner
-0.作用: 在应用启动后，去执行相关代码逻辑，且只会执行一次,run()方法里使用任何依赖，因为它们已经初始化好了
+0.作用: 在应用启动后，`去执行相关代码逻辑`，且只会执行一次,run()方法里使用任何依赖，因为它们已经初始化好了
 1.使用:bean实现接口
    1.实现接口java类 + @Component/@Service等
    2.实现接口java类 + @Bean
-2.指定多个实现CommandLineRunner接口类执行顺序 @Order(value=<number>)
+2.指定多个实现CommandLineRunner接口类执行顺序 @Order(value=<number>), @order的value属性值越小优先级越高
+2.1 java config(@Configuration + @Bean)的方式配置多个 CommandLineRunner,再使用@Order配置启动顺序时,@Order不生效
+
+
+#### Thymeleaf
+1. springboot自动集成了Thymeleaf, org.springframework.boot.autoconfigure.thymeleaf包对Thymeleaf进行自动配置
+2. ThymeleafProperties配置了 Thymeleaf 在 application.properties中 配置选项,其源码
+```
+@ConfigurationProperties(
+    prefix = "spring.thymeleaf"
+)
+public class ThymeleafProperties {...}
+```
+2. 默认情况下,springboot中的静态文件放到 src/main/resources/static下,页面放到 src/main/resources/templates
+   1. [thymeleaf文档](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html)
+
+### springboot数据访问

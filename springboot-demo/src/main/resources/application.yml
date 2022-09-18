@@ -2,16 +2,31 @@ name: bofan
 server:
   port: 9090
   servlet:
-    contextPath: /hello-boot
+    contextPath: /
 logging:
   level:
     org:
       springframework:
-        web: DEBUG
+        web: INFO
   config: classpath:logback.xml
 spring:
   profiles:
     active: dev
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML5
+    encoding: UTF-8
+    servlet:
+      content-type: text/html
+    cache: false
+#  resources:
+#    chain:
+#      strategy:
+#        content:
+#          enabled: true
+#          paths: /**
+
 
 #---
 #spring:

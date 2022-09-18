@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<p class="p1">css selector class="p1", 1</p>
+<p class="p1">css selector class="p1", 2</p>
+<p class="p1">css selector class="p1", 3</p>
+<p class="p1">css selector class="p1", 4</p>
+<button onclick="findFirstClassP1()">测试获取第一个class属性值为p1的节点,将其字体改为红色</button>
+<br/>
+<button onclick="findAllClassP1()">测试获取所有class属性值为p1的节点</button>
+<p class="p1-1 p1-2">css selector class="p1-1 p1-2", 1</p>
+<p class="p1-1 p1-2">css selector class="p1-1 p1-2", 2</p>
+<p class="p1-1 p1-2">css selector class="p1-1 p1-2", 3</p>
+<p class="p1-1 p1-2">css selector class="p1-1 p1-2", 4</p>
+
+<button onclick="findAllClassP_1P_2()">测试获取所有class属性值有 p1-1、p1-2 的节点</button>
+<div class="p2_1">
+    div class css selector class="p2_1"
+    <p class="p2_1_p">in div class="p2_1", css selector class="p2_1_p", 0</p>
+    <p class="p2_1_p">in div class="p2_1", css selector class="p2_1_p", 1</p>
+    <p class="p2_1_p">in div class="p2_1", css selector class="p2_1_p", 2</p>
+</div>
+<button onclick="findAllClassP2_1_P()">测试获取p2_1 中的所有class属性值有 p2_1_p 的节点</button>
+
+<p id="p-id">id="p-id"</p>
+<button onclick="findIdPiD()">测试获取 id="p-id" 的节点</button>
+<br/>
+<button onclick="findAllNode()">把所有node内容颜色变为绿色</button>
+<br/>
+<button onclick="findAllPNode()">把所有 p标签 node内容颜色变为灰色</button>
+<br/>
+<h1 class="p1">h1 css selector class="p1"</h1>
+<h2 class="p1">h2 css selector class="p1"</h2>
+<h3 class="p1">h3 css selector class="p1"</h3>
+<h4 class="p1">h4 css selector class="p1"</h4>
+<button onclick="findClassPH1()">得到所有class="p1"的 h1标签 node的内容</button>
+<br/>
+<button onclick="findAllPAndButton()">将所有的 p 标签 和 button 标签内容变为黄色</button>
+<br/>
+<button onclick="findAllPinDiv()">将所有的div标签的p标签内容变为蓝色</button>
+<br/>
+
+
+<div class="p3_1">
+  div class css selector class="p3_1"
+    <div class="p3_1_1">
+        div class css selector class="p3_1_1"
+        <p class="p3_1_1_p">in div class="p3_1_1", css selector class="p3_1_1_p", 0</p>
+        <p class="p3_1_1_p">in div class="p3_1_1", css selector class="p3_1_1_p", 1</p>
+        <p class="p3_1_1_p">in div class="p3_1_1", css selector class="p3_1_1_p", 2</p>
+    </div>
+</div>
+
+<button onclick="findAllPofClass()">class css selector为 p3_1的所有子元素颜色变为粉色,生效</button><br/>
+<button onclick="findAllPofClassDirectChild()">class css selector为 p3_1的所有直接子元素颜色变为粉色,不生效</button><br/>
+
+<p class="p4_1">p class="p4_1"</p>
+<p class="p4_2">p class="p4_2"</p>
+<button onclick="findAllP4_1AndP4_2()">将所有class="p4_1"和class="p4_2"的node颜色变为粉色</button><br/>
+<button onclick="findAllButtonAndP1()">将所有button标签和class="p1"的node颜色变为粉色</button><br/>
+
+
+<p author="c">p author="c"</p>
+<p author="b">p author="b"</p>
+<p author="f">p author="f"</p>
+<p author="bf">p author="bf"</p>
+<p author="cbf">p author="cbf"</p>
+<p author="yy">p author="yy"</p>
+
+<button onclick="findAllAuthorAndP()">找到所有有属性author的p标签</button><br/>
+<button onclick="findAllAuthorAndPEqualC()">找到所有有属性author="c"的p标签</button><br/>
+<button onclick="findAllAuthorAndPContainsC()">找到所有属性author的值包含c的p标签,用p[author~=c],不生效</button><br/>
+<button onclick="findAllAuthorAndPContainsC1()">找到所有属性author的值包含c的p标签,用p[author*=c]</button><br/>
+<button onclick="findAllAuthorAndPStartB()">找到所有属性author的值以b开头的p标签,用p[author^=b]</button><br/>
+<button onclick="findAllAuthorAndPStartB1()">找到所有属性author的值以b开头的p标签,用p[author|=b],不生效</button><br/>
+<button onclick="findAllAuthorAndPEndF()">找到所有属性author的值以f结尾的p标签</button><br/>
+
+<div id = "div1">
+    div id = "div1"
+    <p>第1个孩子</p>
+    <p>第2个孩子</p>
+    <p>第3个孩子</p>
+    <p>第4个孩子</p>
+    <p>第5个孩子</p>
+    <p>第6个孩子</p>
+    <p>第7个孩子</p>
+    <p>第8个孩子</p>
+    <p>第9个孩子</p>
+    <p>第10个孩子</p>
+</div>
+<button onclick="findIdDiv1FirstChild()">找到div id = "div1"的第一个p孩子</button><br/>
+<button onclick="findIdDiv1LastChild()">找到div id = "div1"的最后一个p孩子</button><br/>
+<button onclick="findIdDiv15thChild()">找到div id = "div1"的顺数第5个p孩子</button><br/>
+<button onclick="findIdDiv1Reciprocal3thChild()">找到div id = "div1"的倒数第3个p孩子</button><br/>
+
+
+
+<script>
+    function findFirstClassP1() {
+        var element = document.querySelector(".p1");
+        element.style.color = "red";
+    }
+
+    function findAllClassP1() {
+        var p1List = document.querySelectorAll(".p1");
+        var allP1ListContent = "";
+        for (var i = 0; i < p1List.length; i++) {
+            allP1ListContent = allP1ListContent + "\n" + p1List[i].innerText;
+        }
+        alert("all p1 class node content:" + allP1ListContent);
+    }
+
+    function findAllClassP_1P_2() {
+        var p1_1p1_2List = document.querySelectorAll(".p1-1.p1-2");
+        var p1_1p1_2ListContent = "";
+        for (var i = 0; i < p1_1p1_2List.length; i++) {
+            p1_1p1_2ListContent = p1_1p1_2ListContent + "\n" + p1_1p1_2List[i].innerText;
+        }
+        alert("all p1-1 p1-2 class node content:" + p1_1p1_2ListContent);
+    }
+
+    function findAllClassP2_1_P() {
+        var p2_1_pList = document.querySelectorAll(".p2_1 .p2_1_p");
+        var p2_1_pListContent = "";
+        for (var i = 0; i < p2_1_pList.length; i++) {
+            p2_1_pListContent = p2_1_pListContent + "\n" + p2_1_pList[i].innerText;
+        }
+        alert("all p2_1_p nodes content in p2_1 class node :" + p2_1_pListContent);
+    }
+
+    function findIdPiD() {
+        var element = document.querySelector("#p-id");
+        alert(element.innerHTML);
+    }
+
+    function findAllNode() {
+        var all = document.querySelectorAll("*");
+        console.log("all.length is " + all.length);
+        for (var i = 0; i < all.length; i++) {
+            all[i].style.color = "green";
+        }
+    }
+
+    function findAllPNode() {
+        var allP = document.querySelectorAll("p");
+        console.log("allP.length is " + allP.length);
+        for (var i = 0; i < allP.length; i++) {
+            allP[i].style.color = "gray";
+        }
+    }
+
+    function findClassPH1() {
+        var h1p1List = document.querySelectorAll("h1.p1");
+        var h1p1ListContent = "";
+        for (var i = 0; i < h1p1List.length; i++) {
+            h1p1ListContent = h1p1ListContent + "\n" + h1p1List[i].innerText;
+        }
+        alert("all h1 p1 nodes content: " + h1p1ListContent);
+    }
+
+    function findAllPAndButton() {
+        var allPAndButton = document.querySelectorAll("p,button");
+        console.log("allPAndButton.length is " + allPAndButton.length);
+        for (var i = 0; i < allPAndButton.length; i++) {
+            allPAndButton[i].style.color = "yellow";
+        }
+    }
+
+    function findAllPinDiv() {
+        var allPInDiv = document.querySelectorAll("div p");
+        console.log("allPInDiv.length is " + allPInDiv.length);
+        for (var i = 0; i < allPInDiv.length; i++) {
+            allPInDiv[i].style.color = "blue";
+        }
+    }
+    function findAllPofClassDirectChild() {
+      var allPofP3_1DirectChild = document.querySelectorAll(".p3_1>p");
+      console.log("allPofP3_1DirectChild.length is " + allPofP3_1DirectChild.length);
+      for (var i = 0; i < allPofP3_1DirectChild.length; i++) {
+        allPofP3_1DirectChild[i].style.color = "pink";
+      }
+    }
+    function findAllPofClass() {
+      var allPofP3_1 = document.querySelectorAll(".p3_1 p");
+      console.log("allPofP3_1.length is " + allPofP3_1.length);
+      for (var i = 0; i < allPofP3_1.length; i++) {
+        allPofP3_1[i].style.color = "pink";
+      }
+    }
+    function findAllP4_1AndP4_2() {
+        var p4_1AndP4_2 = document.querySelectorAll(".p4_1,.p4_2");
+        console.log("p4_1AndP4_2.length is " + p4_1AndP4_2.length);
+        for (var i = 0; i < p4_1AndP4_2.length; i++) {
+            p4_1AndP4_2[i].style.color = "pink";
+        }
+    }
+    function findAllButtonAndP1() {
+        var buttonAndP1 = document.querySelectorAll("button,.p1");
+        console.log("buttonAndP1.length is " + buttonAndP1.length);
+        for (var i = 0; i < buttonAndP1.length; i++) {
+            buttonAndP1[i].style.color = "pink";
+        }
+    }
+    function findAllAuthorAndP() {
+        var authorAndPList = document.querySelectorAll("p[author]");
+        var authorAndPListContent = "";
+        for (var i = 0; i < authorAndPList.length; i++) {
+            authorAndPListContent = authorAndPListContent + "\n" + authorAndPList[i].innerText;
+        }
+        alert("all p content with author attr  is: " + authorAndPListContent);
+    }
+    function findAllAuthorAndPEqualC() {
+        var authorAndPEqualCList = document.querySelectorAll("p[author=c]");
+        var authorAndPEqualCListContent = "";
+        for (var i = 0; i < authorAndPEqualCList.length; i++) {
+            authorAndPEqualCListContent = authorAndPEqualCListContent + "\n" + authorAndPEqualCList[i].innerText;
+        }
+        alert("all p content which author attr value is C  is: " + authorAndPEqualCListContent);
+    }
+    function findAllAuthorAndPContainsC() {
+        var authorAndPContainsCList = document.querySelectorAll("p[author~=c]");
+        var authorAndPContainsCListContent = "";
+        for (var i = 0; i < authorAndPContainsCList.length; i++) {
+            authorAndPContainsCListContent = authorAndPContainsCListContent + "\n" + authorAndPContainsCList[i].innerText;
+        }
+        alert("all p content which author attr value contains C  is: " + authorAndPContainsCListContent);
+    }
+    function findAllAuthorAndPContainsC1() {
+        var authorAndPContainsCList = document.querySelectorAll("p[author*=c]");
+        var authorAndPContainsCListContent = "";
+        for (var i = 0; i < authorAndPContainsCList.length; i++) {
+            authorAndPContainsCListContent = authorAndPContainsCListContent + "\n" + authorAndPContainsCList[i].innerText;
+        }
+        alert("all p content which author attr value contains C  is: " + authorAndPContainsCListContent);
+    }
+    function findAllAuthorAndPStartB() {
+        var authorAndPStartBList = document.querySelectorAll("p[author^=b]");
+        var authorAndPStartBListContent = "";
+        for (var i = 0; i < authorAndPStartBList.length; i++) {
+            authorAndPStartBListContent = authorAndPStartBListContent + "\n" + authorAndPStartBList[i].innerText;
+        }
+        alert("all p content which author attr value start with b  is: " + authorAndPStartBListContent);
+    }
+    function findAllAuthorAndPStartB1() {
+        var authorAndPStartBList = document.querySelectorAll("p[author|=b]");
+        var authorAndPStartBListContent = "";
+        for (var i = 0; i < authorAndPStartBList.length; i++) {
+            authorAndPStartBListContent = authorAndPStartBListContent + "\n" + authorAndPStartBList[i].innerText;
+        }
+        alert("all p content which author attr value star with b is: " + authorAndPStartBListContent);
+    }
+    function findAllAuthorAndPEndF() {
+        var authorAndPEndFList = document.querySelectorAll("p[author$=f]");
+        var authorAndPEndFListContent = "";
+        for (var i = 0; i < authorAndPEndFList.length; i++) {
+            authorAndPEndFListContent = authorAndPEndFListContent + "\n" + authorAndPEndFList[i].innerText;
+        }
+        alert("all p content which author attr value end with f  is: " + authorAndPEndFListContent);
+    }
+    function findIdDiv1FirstChild() {
+        var element = document.querySelector("#div1 p:first-child");
+        alert("p content is: "+ element.innerHTML);
+    }
+    function findIdDiv1LastChild() {
+        var element = document.querySelector("#div1 p:last-child");
+        alert("p content is: "+ element.innerHTML);
+    }
+    function findIdDiv15thChild() {
+        var element = document.querySelector("#div1 p:nth-child(5)");
+        alert("p content is: "+ element.innerHTML);
+    }
+    function findIdDiv1Reciprocal3thChild() {
+        var element = document.querySelector("#div1 p:nth-last-child(3)");
+        alert("p content is: "+ element.innerHTML);
+    }
+
+</script>
+<script src="jquery/jquery-3.6.1.slim.min.js" type="text/javascript"></script>
+</div>
+</body>
+</html>

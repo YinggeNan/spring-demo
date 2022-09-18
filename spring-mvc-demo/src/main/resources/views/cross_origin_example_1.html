@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>百度提示词</title>
+</head>
+<body>
+<input type="text" id="keyword" placeholder="请输入关键字"/>
+<input type="button" id="btn" value="查询"/>
+<div class="box"></div>
+
+<script>
+    var btn = document.getElementById("btn");
+    btn.onclick = function(){
+        var keyWord = document.getElementById("keyword").value;
+        var script = document.createElement("script");
+        script.src = "https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?wd="+keyWord+"&cb=haha";
+        window["haha"] = function(data){
+            var list = "<ul>";
+            for(var i=0; i<data.s.length; i++){
+                var temp = data.s[i];
+                list += "<li>"+temp+"</li>";
+            }
+            list += "</ul>";
+            var box = document.querySelector(".box");
+            box.innerHTML = list;
+        };
+        var head = document.querySelector("head");
+        head.appendChild(script);
+    };
+</script>
+</body>
+</html>

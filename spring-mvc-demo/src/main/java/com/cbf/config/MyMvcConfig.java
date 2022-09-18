@@ -41,6 +41,7 @@ public class MyMvcConfig extends WebMvcConfigurerAdapter { // 2.继承WebMvcConf
         return viewResolver;
     }
 
+    // 设置静态文件访问
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         super.addResourceHandlers(registry);

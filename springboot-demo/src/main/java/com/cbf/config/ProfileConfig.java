@@ -20,7 +20,7 @@ public class ProfileConfig {
 
     @Value("${db.password}")
     private String dbPassword;
-    @Value("${config-a.name}}")
+    @Value("${config-a.name}")
     private String configAName;
 
     @Value("${config-b.name}")
